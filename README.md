@@ -22,6 +22,8 @@ sfc /SCANNOW
 Dism /Online /Cleanup-Image /ScanHealth
 Dism /Online /Cleanup-Image /RestoreHealth
 
+And also, in windows 10, it might freeze while full screen. So if your OS is windows 10, try to not use full screen as much as possible.
+
 ===============================================================================
 
 Credits:
