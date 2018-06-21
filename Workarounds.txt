@@ -1,0 +1,133 @@
+Common issues workarounds:
+
+===============================================================================
+If WMC does not find any tuners (HDHomerun):
+
+restart the system
+then put the system in sleep state
+and then wake it back up
+
+===============================================================================
+Manually backup WMC settings for reinstall later:
+
+#1 stop the WMC services (ehRecvr, ehSched, Mcx2Svc)
+
+#2 copy the following folder in a safe place (ProgramData is a hidden folder):
+"C:\ProgramData\Microsoft\eHome"
+
+#3 open regedit.exe and export the following registry key to .reg file:
+"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Media Center"
+
+# when installing WMC later and before starting it, check that the services are stopped
+then import the .reg file, and copy the eHome folder back in place.
+
+===============================================================================
+Simple guide for live TV setup by "GunnerHook":
+
+1.  Do clean install of Win10 build 10240.
+
+2.  Install HDHomerun tuner drivers.
+
+3.  Download and install WMC pack.
+
+4.  Open command prompt as administrator, and execute:
+attrib -r C:\Windows\System32\Drivers\etc\hosts
+notepad C:\Windows\System32\Drivers\etc\hosts
+
+Add these 2 entries at the bottom if they don't exist:
+2.16.216.176    cdn.epg.tvdownload.microsoft.com
+65.55.186.113    data.tvdownload.microsoft.com
+
+save the file, and reboot
+ 
+5.  Right click and Launch WMC as admin for the very first setup of WMC
+Go through the live setup on WMC, put in correct zipcode, finish all the basic steps of live tv setup in WMC.
+
+6.  Install DVD player app (through WU or manually as descibed above)
+
+7.  Add NETWORK service to the administrators group in order for scheduled recordings to start correctly.
+
+8.  If you are using HDHomerun and you get no tv signal available for this channel, reinstall the HDhomerun drivers again AFTER the TV setup was completed in WMC.
+
+===============================================================================
+If the initial tv setup wizard stuck, reboot the system
+then launch this file as administrator while WMC is running
+C:\Windows\ehome\mcupdate.exe
+
+===============================================================================
+If you have "Decoder Error", you may install Shark007 codec pack:
+http://shark007.net/
+
+check this file for recommended settings:
+http://mediacenterworld.nl/download/Shark007_setting_win10_MCE.pdf
+
+===============================================================================
+If the search through guide in WMC fails with an error that indexing was still occuring,
+Open an elevated command prompt, and execute:
+
+reg delete "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Media Center\Service\EPG" /v SearchRegistered /f
+net stop WSearch
+cd %windir%\ehome
+ehprivjob /DoRegisterSearch
+
+===============================================================================
+If you are having activation issues of the CableCard Product key:
+
+when your activation fails, click back in the wizard
+then open command prompt as administrator, and execute:
+slmgr -ipk MVV4F-R2T29-WBHYJ-BBFQY-J64XX
+slmgr -ato
+
+then continue the wizard
+
+===============================================================================
+If you have Guide data download problems (specially US residents):
+
+1.Open notepad (right click> run as administrator)
+
+2.Open host file ( File>open> c:\windows\system32\drivers\etc\hosts)
+
+3.Add this to the end of the file-
+2.16.216.176 cdn.epg.tvdownload.microsoft.com
+
+and place one of the below ip addresses depending on your location in the US
+west coast or east coast
+65.55.186.113 data.tvdownload.microsoft.com
+central or southern us
+65.55.5.170 data.tvdownload.microsoft.com
+
+ex. If you lived on the east coast you would add this to the bottom of the file:
+65.55.186.113 data.tvdownload.microsoft.com
+2.16.216.176 cdn.epg.tvdownload.microsoft.com 
+
+4.Save the file (file>save)
+
+5.Open CMD command prompt (file>search for cmd>right click>run as administrator)
+
+6.Type: ipconfig /flushdns
+If you type it correctly it should say: "successfully flushed the dns resolver cache."
+
+7.Close Windows Media Center if it is open
+
+8.Start>type "c:\ProgramData\Microsoft\ehome" 
+
+9.Delete file "mcepg2-0" and folder "mcepg2-0" this will force you to set up live tv from scratch in WMC (or delete anything named m***.db and the corresponding folder)
+
+10.Open windows media center and go through the Live TV setup and you should now be able to download guide data
+
+===============================================================================
+old-not-needed workaround, left for reference:
+
+to make WMC wake up for recordings, you may need to make "NETWORK SERVICE" a member of the administrator group
+
+Run lusrmgr.msc, or right-click on Start button and select: Computer Management > Local users & Groups
+then:
+Groups > Administrators > Add > "network service" > Check names > OK
+
+or directly open command prompt as administrator:
+for /f "usebackq delims=" %x in (`powershell "(New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value.Split([IO.Path]::DirectorySeparatorChar)[1]"`) do set "admins=%x"
+for /f "usebackq delims=" %x in (`powershell "(New-Object System.Security.Principal.SecurityIdentifier('S-1-5-20')).Translate([System.Security.Principal.NTAccount]).Value"`) do set "netsvc=%x"
+net localgroup %admins% "%netsvc%" /add
+
+Windows 10 Home edition don't have Group Policy, thus you need to try the command prompt directly
+
